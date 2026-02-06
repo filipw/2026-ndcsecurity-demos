@@ -79,3 +79,4 @@ public static class SystemSecurityCryptographyDemo
         Helpers.PrintPanel("Reverification", [$"{(verifiedWithPublicKey ? ":check_mark_button:" : ":cross_mark:")} Verified!"]);
     }
 }
+

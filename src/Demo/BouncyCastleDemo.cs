@@ -9,47 +9,6 @@ using Spectre.Console;
 
 public static class BouncyCastleDemo
 {
-    public static void RunMlKem()
-    {
-        Console.WriteLine("***************** ML-KEM *******************");
-
-        var random = new SecureRandom();
-        var keyGenParameters = new MLKemKeyGenerationParameters(random, MLKemParameters.ml_kem_768);
-
-        var kyberKeyPairGenerator = new MLKemKeyPairGenerator();
-        kyberKeyPairGenerator.Init(keyGenParameters);
-
-        // generate key pair for Alice
-        var aliceKeyPair = kyberKeyPairGenerator.GenerateKeyPair();
-
-        // get and view the keys
-        var alicePublic = (MLKemPublicKeyParameters)aliceKeyPair.Public;
-        var alicePrivate = (MLKemPrivateKeyParameters)aliceKeyPair.Private;
-        var pubEncoded = alicePublic.GetEncoded();
-        var privateEncoded = alicePrivate.GetEncoded();
-        Helpers.PrintPanel("Alice's keys", [$":unlocked: Public: {pubEncoded.PrettyPrint()}", $":locked: Private: {privateEncoded.PrettyPrint()}"]);
-
-        // Bob encapsulates a new shared secret using Alice's public key
-        var encapsulator = new MLKemEncapsulator(MLKemParameters.ml_kem_768);
-        encapsulator.Init(new ParametersWithRandom(alicePublic, random));
-
-        var cipherText = new byte[encapsulator.EncapsulationLength];
-        var bobSecret = new byte[encapsulator.SecretLength];
-        encapsulator.Encapsulate(cipherText, 0, cipherText.Length, bobSecret, 0, bobSecret.Length);
-
-        // Alice decapsulates a new shared secret using Alice's private key
-        var decapsulator = new MLKemDecapsulator(MLKemParameters.ml_kem_768);
-        decapsulator.Init(alicePrivate);
-
-        byte[] aliceSecret = new byte[decapsulator.SecretLength];
-        decapsulator.Decapsulate(cipherText, 0, cipherText.Length, aliceSecret, 0, aliceSecret.Length);
-        Helpers.PrintPanel("Key encapsulation", [$":man: Bob's secret: {bobSecret.PrettyPrint()}", $":locked_with_key: Cipher text (Bob -> Alice): {cipherText.PrettyPrint()}", $":woman: Alice's secret: {aliceSecret.PrettyPrint()}"]);
-
-        // Compare secrets
-        var equal = bobSecret.SequenceEqual(aliceSecret);
-        Helpers.PrintPanel("Verification", [$"{(equal ? ":check_mark_button:" : ":cross_mark:")} Secrets equal!"]);
-    }
-
     public static void RunMldsa()
     {
         Console.WriteLine("***************** ML-DSA *******************");
@@ -103,5 +62,46 @@ public static class BouncyCastleDemo
         bob.BlockUpdate(data, 0, data.Length);
         var bobReVerified = bob.VerifySignature(signature2);
         Helpers.PrintPanel("Reverification", [$"{(bobReVerified ? ":check_mark_button:" : ":cross_mark:")} Verified!"]);
+    }
+
+    public static void RunMlKem()
+    {
+        Console.WriteLine("***************** ML-KEM *******************");
+
+        var random = new SecureRandom();
+        var keyGenParameters = new MLKemKeyGenerationParameters(random, MLKemParameters.ml_kem_768);
+
+        var kyberKeyPairGenerator = new MLKemKeyPairGenerator();
+        kyberKeyPairGenerator.Init(keyGenParameters);
+
+        // generate key pair for Alice
+        var aliceKeyPair = kyberKeyPairGenerator.GenerateKeyPair();
+
+        // get and view the keys
+        var alicePublic = (MLKemPublicKeyParameters)aliceKeyPair.Public;
+        var alicePrivate = (MLKemPrivateKeyParameters)aliceKeyPair.Private;
+        var pubEncoded = alicePublic.GetEncoded();
+        var privateEncoded = alicePrivate.GetEncoded();
+        Helpers.PrintPanel("Alice's keys", [$":unlocked: Public: {pubEncoded.PrettyPrint()}", $":locked: Private: {privateEncoded.PrettyPrint()}"]);
+
+        // Bob encapsulates a new shared secret using Alice's public key
+        var encapsulator = new MLKemEncapsulator(MLKemParameters.ml_kem_768);
+        encapsulator.Init(new ParametersWithRandom(alicePublic, random));
+
+        var cipherText = new byte[encapsulator.EncapsulationLength];
+        var bobSecret = new byte[encapsulator.SecretLength];
+        encapsulator.Encapsulate(cipherText, 0, cipherText.Length, bobSecret, 0, bobSecret.Length);
+
+        // Alice decapsulates a new shared secret using Alice's private key
+        var decapsulator = new MLKemDecapsulator(MLKemParameters.ml_kem_768);
+        decapsulator.Init(alicePrivate);
+
+        byte[] aliceSecret = new byte[decapsulator.SecretLength];
+        decapsulator.Decapsulate(cipherText, 0, cipherText.Length, aliceSecret, 0, aliceSecret.Length);
+        Helpers.PrintPanel("Key encapsulation", [$":man: Bob's secret: {bobSecret.PrettyPrint()}", $":locked_with_key: Cipher text (Bob -> Alice): {cipherText.PrettyPrint()}", $":woman: Alice's secret: {aliceSecret.PrettyPrint()}"]);
+
+        // Compare secrets
+        var equal = bobSecret.SequenceEqual(aliceSecret);
+        Helpers.PrintPanel("Verification", [$"{(equal ? ":check_mark_button:" : ":cross_mark:")} Secrets equal!"]);
     }
 }
