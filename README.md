@@ -1,6 +1,6 @@
 # 2026 NDC Security Demos
 
-Demos for my session "Post-Quantum Cryptography for .NET Developers" at NDC Security 2026 in Oslo. 
+Demos for my session ["Post-Quantum Cryptography for .NET Developers"](https://ndcsecurity.com/agenda/post-quantum-cryptography-for-net-developers-0w0y/0noa0li2bew) at NDC Security 2026 in Oslo. 
 
 ## Notes on PQC algorithms demo
 
