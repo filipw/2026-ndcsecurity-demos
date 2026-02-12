@@ -2,7 +2,10 @@
 FROM debian:trixie
 
 RUN apt-get update && apt-get install -y \
-    wget openssl ca-certificates libicu-dev \
+    wget \
+    openssl \
+    ca-certificates \
+    libicu-dev \
     && rm -rf /var/lib/apt/lists/*
 
 ENV DOTNET_INSTALL_DIR=/usr/share/dotnet
@@ -13,13 +16,12 @@ RUN wget https://dot.net/v1/dotnet-install.sh \
 
 WORKDIR /app
 
-# generate PURE ML-DSA-65 Certificate
-RUN openssl req -x509 -new -newkey mldsa65 -keyout server.key -out server.crt -nodes -days 365 \
-    -subj "/CN=pqc-server" \
-    -addext "subjectAltName=DNS:pqc-server,DNS:localhost,IP:127.0.0.1"
+# generate a Standard ECDSA Certificate (Hybrid TLS is achieved via key exchange)
+# use prime256v1 (standard ECDSA) instead of "pure PQC" such as mldsa65
+RUN openssl req -x509 -new -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -keyout server.key -out server.crt -nodes -days 365 -subj "/CN=localhost"
 
 COPY Program.cs .
-COPY PqcDemo.csproj .
+COPY TlsHybridPqc.csproj .
 
 RUN dotnet publish -c Release -o /app/publish
 
@@ -29,4 +31,4 @@ RUN cp /app/server.crt . && cp /app/server.key .
 ENV ASPNETCORE_URLS=https://+:443
 EXPOSE 443
 
-ENTRYPOINT ["dotnet", "PqcDemo.dll"]
+ENTRYPOINT ["dotnet", "TlsHybridPqc.dll"]
