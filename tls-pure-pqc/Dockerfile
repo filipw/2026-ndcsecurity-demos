@@ -1,12 +1,10 @@
 # use Debian 13 (contains OpenSSL 3.5+)
 FROM debian:trixie
 
-# 1. Install dependencies
 RUN apt-get update && apt-get install -y \
     wget openssl ca-certificates libicu-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. Install .NET 10 Preview
 ENV DOTNET_INSTALL_DIR=/usr/share/dotnet
 ENV PATH=$PATH:$DOTNET_INSTALL_DIR
 RUN wget https://dot.net/v1/dotnet-install.sh \
