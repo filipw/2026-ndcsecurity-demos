@@ -30,10 +30,12 @@ app.MapGet("/", (HttpContext ctx) =>
     Console.WriteLine($"[Crypto] Cipher Suite: {cipherSuite}");
 
     return Results.Text($"""
-        SUCCESS! Verified Pure ML-DSA Connection.
+        SUCCESS! Verified Pure Post-Quantum TLS Connection.
         
         TLS Version: {tlsVersion}
         Cipher: {cipherSuite}
+        Authentication: ML-DSA-65 (certificate)
+        Key Exchange: ML-KEM-768 (negotiated via TLS 1.3)
         """);
 });
 
