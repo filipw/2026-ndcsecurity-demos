@@ -31,3 +31,7 @@ export LD_LIBRARY_PATH="$OPENSSL_ROOT/lib:${LD_LIBRARY_PATH}"
 export OPENSSL_MODULES="$OPENSSL_ROOT/lib/ossl-modules"
 export PATH="$OPENSSL_ROOT/bin:$PATH"
 ```
+
+## TLS demos
+
+For the TLS demos, make sure you have Docker installed.
